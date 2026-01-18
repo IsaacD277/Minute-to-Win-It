@@ -6,11 +6,14 @@
 //
 
 import SwiftUI
+import ConfettiSwiftUI
 
 struct ContentView: View {
+    @State private var trigger: Int = 0
     @State var task: Task<Void, Never>? = nil  // reference to the task
     @State private var countdown: Int = 60
     @State private var isCountingDown: Bool = false
+    @FocusState var buttonFocus: Bool
     let count = 60
     
     var body: some View {
@@ -29,8 +32,9 @@ struct ContentView: View {
                                 try await Task.sleep(nanoseconds: 1_000_000_000)
                                 countdown -= 1
                             }
+                            trigger += 1
                             isCountingDown = false
-                            try await Task.sleep(nanoseconds: 5_000_000_000)
+                            try await Task.sleep(nanoseconds: 10_000_000_000)
                             countdown = count
                         } catch is CancellationError {
                             print("Task was cancelled")
@@ -42,35 +46,13 @@ struct ContentView: View {
                     self.task?.cancel()
                     countdown = count
                 }
-
             }
+            .confettiCannon(trigger: $trigger, num: 500, confettiSize: 35.0, openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: 1000)
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(countdown > 0 ? Color.background : Color.accent)
     }
-    
-//    func doCountdown() {
-//        self.task?.cancel()
-//        print("Entered function")
-//        while countdown > 0 {
-//            print("Running countdown: \(countdown)")
-//            self.task = Task {
-//                do {
-//                    print("Starting timer")
-//                    try await Task.sleep(nanoseconds: 1_000_000_000)
-//                    print("Finished timer")
-//                    countdown = countdown - 1
-////                    countdown -= 1
-////                    print("Removed one, now at \(countdown)")
-//                } catch is CancellationError {
-//                    print("Task was cancelled")
-//                } catch {
-//                    print("ooops! \(error)")
-//                }
-//            }
-//        }
-//    }
 }
 
 #Preview {
